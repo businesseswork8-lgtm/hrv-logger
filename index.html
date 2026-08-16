@@ -460,10 +460,7 @@ function updateProgressUI() {
 function fireCurrentEntry() {
   if (currentEntryIndex >= entries.length) { updateProgressUI(); return; }
   const e = entries[currentEntryIndex];
-  const date = dateInput.value;
-  const dt = new Date(`${date}T${e.time}:00`);
-  const unix = Math.floor(dt.getTime() / 1000);
-  const input = encodeURIComponent(`${e.hrv}|${unix}`);
+  const input = encodeURIComponent(`${e.hrv}`);
   window.location.href = `shortcuts://run-shortcut?name=Log%20HRV&input=${input}`;
 }
  
@@ -508,3 +505,4 @@ function resetAll() {
 </script>
 </body>
 </html>
+ 

@@ -48,40 +48,29 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
   margin-bottom: 14px;
 }
  
-/* Screenshot thumbnails */
-.thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-.thumb-wrap { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
-.thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.thumb-remove { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.7); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.thumb-status { position: absolute; bottom: 2px; left: 2px; right: 2px; font-size: 9px; text-align: center; border-radius: 4px; padding: 1px 3px; }
-.thumb-status.done { background: rgba(52,211,153,0.8); color: #000; }
-.thumb-status.loading { background: rgba(124,108,255,0.8); color: #fff; }
-.thumb-status.error { background: rgba(248,113,113,0.8); color: #fff; }
- 
-.add-photo-btn {
-  width: 80px; height: 80px; border-radius: 8px; border: 2px dashed var(--border);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--muted); font-size: 11px; gap: 4px; flex-shrink: 0;
-  position: relative;
+textarea {
+  width: 100%;
+  min-height: 160px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'SF Mono', monospace;
+  padding: 12px;
+  outline: none;
+  resize: none;
+  line-height: 1.6;
 }
-.add-photo-btn input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-.add-photo-btn span { font-size: 22px; }
+textarea:focus { border-color: var(--accent); }
+textarea::placeholder { color: var(--muted); font-family: -apple-system, sans-serif; }
  
-/* Loader */
-.loader { display: none; flex-direction: column; align-items: center; gap: 10px; padding: 16px; }
-.spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loader-text { font-size: 13px; color: var(--muted); }
- 
-/* Error */
 .error-box { display: none; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); border-radius: 10px; padding: 12px; font-size: 13px; color: #f87171; margin-top: 12px; line-height: 1.5; }
  
-/* Results */
 #result-section { display: none; }
  
 .detected-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
  
-/* Entries table */
 .entries-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
 .entry-row {
   display: flex; align-items: center; justify-content: space-between;
@@ -94,7 +83,6 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
 .entry-remove { font-size: 18px; color: var(--muted); cursor: pointer; padding: 0 4px; line-height: 1; }
 .entry-count { font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center; }
  
-/* Manual add */
 .manual-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
 .manual-row input {
   flex: 1; background: var(--surface2); border: 1px solid var(--border);
@@ -108,7 +96,6 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
   display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
 }
  
-/* Date row */
 .date-row { display: flex; gap: 8px; margin-top: 12px; }
 .date-row input {
   flex: 1; background: var(--surface2); border: 1px solid var(--border);
@@ -117,7 +104,6 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
 }
 .date-row input:focus { border-color: var(--accent); }
  
-/* Buttons */
 .btn {
   width: 100%; padding: 16px; border-radius: 12px;
   font-size: 16px; font-weight: 600; cursor: pointer; border: none;
@@ -128,7 +114,6 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
 .btn-primary { background: var(--accent); color: white; }
 .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
  
-/* Info box */
 .info-box {
   background: rgba(124,108,255,0.08); border: 1px solid rgba(124,108,255,0.2);
   border-radius: 10px; padding: 12px; font-size: 12px; color: var(--muted); line-height: 1.6;
@@ -151,8 +136,8 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
 .history-toggle { font-size: 11px; color: var(--muted); margin-top: 4px; }
 .history-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 .history-details.open { display: block; }
-.history-entry { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; color: var(--muted); font-variant-numeric: tabular-nums; }
-.history-entry span:last-child { color: var(--green); font-weight: 600; }
+.history-entry-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+.history-entry-row span:last-child { color: var(--green); font-weight: 600; }
 .history-delete { font-size: 11px; color: #f87171; text-align: right; margin-top: 8px; cursor: pointer; }
 .history-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 12px; }
 </style>
@@ -162,31 +147,30 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
 <div class="header">
   <span class="heart">❤️</span>
   <h1>HRV Logger</h1>
-  <p class="subtitle">Screenshot your Pebble Sync Data Details screen.<br>Add multiple screenshots — duplicates are removed automatically.</p>
+  <p class="subtitle">Paste your ChatGPT HRV output below.<br>All readings get logged to Apple Health.</p>
 </div>
  
-<!-- Step 1: Upload -->
-<div class="card" id="upload-card">
-  <h2>1 — Screenshots</h2>
-  <div class="thumbs" id="thumbs">
-    <div class="add-photo-btn" id="add-photo-btn">
-      <input type="file" id="file-input" accept="image/*">
-      <span>📸</span>
-      Add photo
-    </div>
-  </div>
-  <div class="loader" id="loader">
-    <div class="spinner"></div>
-    <div class="loader-text" id="loader-text">Reading HRV data…</div>
-  </div>
+<!-- Step 1: Paste -->
+<div class="card">
+  <h2>1 — Paste ChatGPT output</h2>
+  <textarea id="paste-input" placeholder="Paste your ChatGPT output here...
+ 
+Example:
+Time
+HRV
+11:00
+42 ms
+10:00
+30 ms"></textarea>
   <div class="error-box" id="error-box"></div>
+  <button class="btn btn-primary" onclick="parseInput()" style="margin-top:12px">Read entries</button>
 </div>
  
-<!-- Step 2: Review entries -->
+<!-- Step 2: Review -->
 <div id="result-section">
   <div class="card">
     <h2>2 — Review entries</h2>
-    <div class="detected-label" id="detected-label">Detected from screenshots</div>
+    <div class="detected-label" id="detected-label">Detected readings</div>
     <div class="entries-list" id="entries-list"></div>
     <div class="entry-count" id="entry-count"></div>
     <div class="scroll-hint" id="scroll-hint"></div>
@@ -195,7 +179,7 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
  
     <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Add or correct an entry:</div>
     <div class="manual-row">
-      <input type="time" id="manual-time" placeholder="Time">
+      <input type="time" id="manual-time">
       <input type="number" id="manual-hrv" placeholder="HRV ms" min="1" max="300" style="max-width:110px">
       <div class="add-btn" onclick="addManualEntry()">+</div>
     </div>
@@ -206,16 +190,9 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
     <div class="date-row">
       <input type="date" id="entry-date">
     </div>
-  </div>
  
-  <!-- Step 3: Write to Health -->
-  <div class="card">
-    <h2>3 — Write to Apple Health</h2>
-    <div class="info-box">
-      <strong>How it works:</strong> Each entry opens your <code>Log HRV</code> shortcut one at a time. Tap <strong>Run</strong> in Shortcuts, then come back and tap <strong>Next</strong>.
-    </div>
-    <button class="btn btn-primary" onclick="runAllShortcuts()">📱 Start logging to Health</button>
-    <button class="btn btn-secondary" onclick="resetAll()" style="margin-top:6px">↩ Start over</button>
+    <button class="btn btn-primary" onclick="runAllShortcuts()" style="margin-top:16px">📱 Start logging to Health</button>
+    <button class="btn btn-secondary" onclick="resetAll()">↩ Start over</button>
   </div>
  
   <!-- Progress card -->
@@ -241,15 +218,54 @@ h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: upp
 </div>
  
 <script>
-const API = 'https://api.anthropic.com/v1/messages';
 const HISTORY_KEY = 'hrv_history';
 let entries = [];
-let screenshots = [];
-let processingQueue = false;
 let currentEntryIndex = 0;
  
 const dateInput = document.getElementById('entry-date');
 dateInput.value = new Date().toISOString().split('T')[0];
+ 
+// ===== Parse pasted text =====
+function parseInput() {
+  const raw = document.getElementById('paste-input').value.trim();
+  if (!raw) {
+    showError('Please paste your ChatGPT output first.');
+    return;
+  }
+ 
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const timeRegex = /^(\d{1,2}:\d{2})$/;
+  const hrvRegex = /^(\d+)\s*ms$/i;
+ 
+  const parsed = [];
+  let i = 0;
+  while (i < lines.length) {
+    if (timeRegex.test(lines[i]) && i + 1 < lines.length && hrvRegex.test(lines[i + 1])) {
+      const time = lines[i].padStart(5, '0');
+      const hrv = parseInt(lines[i + 1]);
+      if (!parsed.some(e => e.time === time)) {
+        parsed.push({ time, hrv });
+      }
+      i += 2;
+    } else {
+      i++;
+    }
+  }
+ 
+  parsed.sort((a, b) => a.time.localeCompare(b.time));
+ 
+  if (parsed.length === 0) {
+    showError('Could not find any readings. Make sure your ChatGPT output matches the expected format (time on one line, value with ms on the next).');
+    return;
+  }
+ 
+  hideError();
+  entries = parsed;
+  document.getElementById('detected-label').textContent = `${entries.length} readings detected`;
+  renderEntries();
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
+}
  
 // ===== State persistence (for Safari reload after Shortcuts) =====
 function saveState() {
@@ -269,9 +285,9 @@ function restoreState() {
   currentEntryIndex = idx;
   if (date) dateInput.value = date;
   if (entries.length > 0) {
+    document.getElementById('detected-label').textContent = `${entries.length} readings — resuming`;
     renderEntries();
     document.getElementById('result-section').style.display = 'block';
-    document.getElementById('detected-label').textContent = `${entries.length} readings — resuming logging`;
     showProgressUI();
   }
 }
@@ -283,7 +299,7 @@ function clearRunningState() {
   sessionStorage.removeItem('hrv_date');
 }
  
-// ===== Session history (persists across days in localStorage) =====
+// ===== History =====
 function getHistory() {
   try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
   catch { return []; }
@@ -293,46 +309,41 @@ function saveSessionToHistory(date, entriesLogged) {
   const history = getHistory();
   history.unshift({
     id: Date.now(),
-    date: date,
+    date,
     loggedAt: new Date().toISOString(),
     count: entriesLogged.length,
     entries: entriesLogged
   });
-  // Keep last 60 sessions
-  const trimmed = history.slice(0, 60);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 60)));
   renderHistory();
 }
  
 function deleteHistoryItem(id) {
-  if (!confirm('Delete this session from history?')) return;
-  const history = getHistory().filter(h => h.id !== id);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  if (!confirm('Delete this session?')) return;
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(getHistory().filter(h => h.id !== id)));
   renderHistory();
 }
  
 function toggleHistoryItem(id) {
-  const el = document.getElementById(`history-details-${id}`);
+  const el = document.getElementById('hd-' + id);
   if (el) el.classList.toggle('open');
 }
  
 function formatLoggedAt(iso) {
   const d = new Date(iso);
   const now = new Date();
-  const isToday = d.toDateString() === now.toDateString();
-  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
-  const isYesterday = d.toDateString() === yesterday.toDateString();
   const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  if (isToday) return `Today, ${time}`;
-  if (isYesterday) return `Yesterday, ${time}`;
-  return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + `, ${time}`;
+  if (d.toDateString() === now.toDateString()) return 'Today, ' + time;
+  const y = new Date(now); y.setDate(now.getDate() - 1);
+  if (d.toDateString() === y.toDateString()) return 'Yesterday, ' + time;
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ', ' + time;
 }
  
 function renderHistory() {
   const container = document.getElementById('history-list');
   const history = getHistory();
   if (history.length === 0) {
-    container.innerHTML = '<div class="history-empty">No sessions logged yet. Your first session will appear here.</div>';
+    container.innerHTML = '<div class="history-empty">No sessions yet. Your first completed session will appear here.</div>';
     return;
   }
   container.innerHTML = history.map(h => `
@@ -345,156 +356,15 @@ function renderHistory() {
         <div class="history-count">${h.count} entries</div>
       </div>
       <div class="history-toggle">Tap to view readings ▾</div>
-      <div class="history-details" id="history-details-${h.id}">
-        ${h.entries.map(e => `<div class="history-entry"><span>${e.time}</span><span>${e.hrv} ms</span></div>`).join('')}
-        <div class="history-delete" onclick="event.stopPropagation(); deleteHistoryItem(${h.id})">Delete this session</div>
+      <div class="history-details" id="hd-${h.id}">
+        ${h.entries.map(e => `<div class="history-entry-row"><span>${e.time}</span><span>${e.hrv} ms</span></div>`).join('')}
+        <div class="history-delete" onclick="event.stopPropagation(); deleteHistoryItem(${h.id})">Delete session</div>
       </div>
     </div>
   `).join('');
 }
  
-// ===== File upload =====
-document.getElementById('file-input').addEventListener('change', e => {
-  if (e.target.files[0]) handleFile(e.target.files[0]);
-  e.target.value = '';
-});
- 
-function handleFile(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const dataUrl = e.target.result;
-    const idx = screenshots.length;
-    screenshots.push({ dataUrl, status: 'pending' });
-    addThumb(idx, dataUrl);
-    processNext();
-  };
-  reader.readAsDataURL(file);
-}
- 
-function addThumb(idx, dataUrl) {
-  const thumbs = document.getElementById('thumbs');
-  const addBtn = document.getElementById('add-photo-btn');
-  const wrap = document.createElement('div');
-  wrap.className = 'thumb-wrap';
-  wrap.id = `thumb-${idx}`;
-  wrap.innerHTML = `
-    <img src="${dataUrl}">
-    <div class="thumb-remove" onclick="removeScreenshot(${idx})">×</div>
-    <div class="thumb-status loading" id="thumb-status-${idx}">reading…</div>
-  `;
-  thumbs.insertBefore(wrap, addBtn);
-}
- 
-function removeScreenshot(idx) {
-  screenshots[idx] = null;
-  const el = document.getElementById(`thumb-${idx}`);
-  if (el) el.remove();
-  rebuildEntries();
-}
- 
-async function processNext() {
-  if (processingQueue) return;
-  processingQueue = true;
- 
-  for (let i = 0; i < screenshots.length; i++) {
-    const s = screenshots[i];
-    if (!s || s.status !== 'pending') continue;
-    s.status = 'loading';
-    setThumbStatus(i, 'loading', 'reading…');
-    document.getElementById('loader').style.display = 'flex';
-    document.getElementById('error-box').style.display = 'none';
- 
-    try {
-      const base64 = s.dataUrl.split(',')[1];
-      const mediaType = s.dataUrl.split(';')[0].split(':')[1];
-      const readings = await extractFromImage(base64, mediaType);
-      s.readings = readings;
-      s.status = 'done';
-      setThumbStatus(i, 'done', `${readings.length} found`);
-    } catch (err) {
-      s.status = 'error';
-      s.readings = [];
-      setThumbStatus(i, 'error', 'failed');
-    }
-    rebuildEntries();
-  }
- 
-  document.getElementById('loader').style.display = 'none';
-  processingQueue = false;
-}
- 
-function setThumbStatus(idx, cls, text) {
-  const el = document.getElementById(`thumb-status-${idx}`);
-  if (!el) return;
-  el.className = `thumb-status ${cls}`;
-  el.textContent = text;
-}
- 
-function rebuildEntries() {
-  const seen = {};
-  const all = [];
-  for (const s of screenshots) {
-    if (!s || !s.readings) continue;
-    for (const r of s.readings) {
-      if (!seen[r.time]) {
-        seen[r.time] = true;
-        all.push(r);
-      }
-    }
-  }
-  all.sort((a, b) => a.time.localeCompare(b.time));
-  entries = all;
- 
-  if (entries.length > 0) {
-    const totalScreenshots = screenshots.filter(s => s && s.status === 'done').length;
-    document.getElementById('detected-label').textContent = `${entries.length} unique readings from ${totalScreenshots} screenshot${totalScreenshots !== 1 ? 's' : ''}`;
-    renderEntries();
-    document.getElementById('result-section').style.display = 'block';
-  } else {
-    document.getElementById('result-section').style.display = 'none';
-  }
-}
- 
-async function extractFromImage(base64, mediaType) {
-  const res = await fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-          { type: 'text', text: `This is a screenshot from the Pebble Sync app showing HRV (Heart Rate Variability) Data Details — a list of individual hourly readings with times and ms values.
- 
-Extract ALL individual HRV readings visible with their timestamps.
- 
-Respond ONLY with this JSON, no markdown:
-{
-  "date": "YYYY-MM-DD or null",
-  "readings": [
-    {"time": "HH:MM", "hrv": <number>}
-  ]
-}
- 
-Rules:
-- time in 24h format (e.g. "06:00", "22:00")
-- hrv as plain integer ms value
-- Include every reading you can see in the list` }
-        ]
-      }]
-    })
-  });
- 
-  const data = await res.json();
-  const text = data.content?.find(b => b.type === 'text')?.text || '';
-  const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-  if (parsed.date) dateInput.value = parsed.date;
-  if (!parsed.readings || parsed.readings.length === 0) throw new Error('No readings found');
-  return parsed.readings.map(r => ({ time: r.time, hrv: r.hrv }));
-}
- 
+// ===== Entries =====
 function renderEntries() {
   const list = document.getElementById('entries-list');
   list.innerHTML = '';
@@ -520,14 +390,8 @@ function removeEntry(i) {
 function addManualEntry() {
   const time = document.getElementById('manual-time').value;
   const hrv = parseInt(document.getElementById('manual-hrv').value);
-  if (!time || !hrv || hrv < 1 || hrv > 300) {
-    alert('Enter a valid time and HRV value (1–300 ms)');
-    return;
-  }
-  if (entries.some(e => e.time === time)) {
-    alert('An entry already exists for that time. Remove it first.');
-    return;
-  }
+  if (!time || !hrv || hrv < 1 || hrv > 300) { alert('Enter a valid time and HRV value (1–300 ms)'); return; }
+  if (entries.some(e => e.time === time)) { alert('An entry for that time already exists.'); return; }
   entries.push({ time, hrv });
   entries.sort((a, b) => a.time.localeCompare(b.time));
   document.getElementById('manual-time').value = '';
@@ -535,6 +399,7 @@ function addManualEntry() {
   renderEntries();
 }
  
+// ===== Logging =====
 function runAllShortcuts() {
   if (entries.length === 0) { alert('No entries to log.'); return; }
   if (!dateInput.value) { alert('Please set the date.'); return; }
@@ -563,17 +428,16 @@ function updateProgressUI() {
     const e = entries[i];
     document.getElementById('progress-entry').textContent = `${e.time} — ${e.hrv} ms`;
     document.getElementById('progress-bar').style.width = `${(i / total) * 100}%`;
-    document.getElementById('next-btn').style.display = 'block';
+    document.getElementById('next-btn').style.display = 'flex';
     document.getElementById('done-btn').style.display = 'none';
   } else {
     document.getElementById('progress-entry').textContent = 'Done! Check Apple Health → Heart Rate Variability';
     document.getElementById('progress-bar').style.width = '100%';
     document.getElementById('next-btn').style.display = 'none';
-    document.getElementById('done-btn').style.display = 'block';
-    // Save this session to history once complete
-    if (!sessionStorage.getItem('hrv_saved_to_history')) {
+    document.getElementById('done-btn').style.display = 'flex';
+    if (!sessionStorage.getItem('hrv_saved')) {
       saveSessionToHistory(dateInput.value, entries);
-      sessionStorage.setItem('hrv_saved_to_history', '1');
+      sessionStorage.setItem('hrv_saved', '1');
     }
     clearRunningState();
   }
@@ -581,10 +445,9 @@ function updateProgressUI() {
  
 function fireCurrentEntry() {
   if (currentEntryIndex >= entries.length) { updateProgressUI(); return; }
-  const e = entries[currentEntryIndex];
   saveState();
-  const input = encodeURIComponent(`${e.hrv}`);
-  window.location.href = `shortcuts://run-shortcut?name=Log%20HRV&input=${input}`;
+  const e = entries[currentEntryIndex];
+  window.location.href = `shortcuts://run-shortcut?name=Log%20HRV&input=${encodeURIComponent(e.hrv)}`;
 }
  
 function nextEntry() {
@@ -593,38 +456,35 @@ function nextEntry() {
   if (currentEntryIndex < entries.length) fireCurrentEntry();
 }
  
+function showError(msg) {
+  const b = document.getElementById('error-box');
+  b.textContent = msg;
+  b.style.display = 'block';
+}
+ 
+function hideError() {
+  document.getElementById('error-box').style.display = 'none';
+}
+ 
 function resetAll() {
   clearRunningState();
-  sessionStorage.removeItem('hrv_saved_to_history');
-  screenshots = [];
+  sessionStorage.removeItem('hrv_saved');
   entries = [];
   currentEntryIndex = 0;
-  processingQueue = false;
- 
-  const thumbs = document.getElementById('thumbs');
-  thumbs.innerHTML = `
-    <div class="add-photo-btn" id="add-photo-btn">
-      <input type="file" id="file-input" accept="image/*">
-      <span>📸</span>
-      Add photo
-    </div>`;
-  document.getElementById('file-input').addEventListener('change', e => {
-    if (e.target.files[0]) handleFile(e.target.files[0]);
-    e.target.value = '';
-  });
+  document.getElementById('paste-input').value = '';
   document.getElementById('result-section').style.display = 'none';
   document.getElementById('log-progress-card').style.display = 'none';
-  document.getElementById('next-btn').style.display = 'block';
+  document.getElementById('next-btn').style.display = 'flex';
   document.getElementById('done-btn').style.display = 'none';
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('error-box').style.display = 'none';
+  hideError();
   dateInput.value = new Date().toISOString().split('T')[0];
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
  
-// Initial render
+// Init
 renderHistory();
 restoreState();
 </script>
 </body>
 </html>
+ 

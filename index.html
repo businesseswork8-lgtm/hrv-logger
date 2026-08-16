@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HRV Logger">
+<title>HRV Logger</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #0d0d14;
+  --surface: #16161f;
+  --surface2: #1e1e2a;
+  --border: #2c2c3e;
+  --accent: #7c6cff;
+  --accent2: #a78bfa;
+  --green: #34d399;
+  --text: #e8e8f2;
+  --muted: #6b6b8a;
+  --radius: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  min-height: 100vh;
+  padding: calc(var(--safe-top) + 20px) 16px calc(var(--safe-bottom) + 32px);
+}
+
+h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+h2 { font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; font-size: 11px; }
+
+.header { text-align: center; padding: 8px 0 24px; }
+.heart { font-size: 32px; margin-bottom: 8px; display: block; }
+.subtitle { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+/* Upload zone */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 32px 16px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+}
+.drop-zone.has-image { padding: 0; border-style: solid; border-color: var(--accent); }
+.drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+.drop-icon { font-size: 32px; margin-bottom: 8px; }
+.drop-text { font-size: 15px; font-weight: 500; }
+.drop-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+#preview-img { width: 100%; border-radius: 12px; display: none; max-height: 280px; object-fit: contain; background: var(--surface2); }
+.change-link { display: none; text-align: center; margin-top: 8px; font-size: 12px; color: var(--accent2); cursor: pointer; }
+
+/* Loader */
+.loader { display: none; flex-direction: column; align-items: center; gap: 10px; padding: 20px; }
+.spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text { font-size: 13px; color: var(--muted); }
+
+/* Error */
+.error-box { display: none; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); border-radius: 10px; padding: 12px; font-size: 13px; color: #f87171; margin-top: 12px; line-height: 1.5; }
+
+/* Results */
+#result-section { display: none; }
+
+.detected-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+/* Entries table */
+.entries-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+.entry-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface2); border-radius: 10px; padding: 10px 12px;
+  border: 1px solid var(--border);
+}
+.entry-time { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.entry-value { font-size: 16px; font-weight: 700; color: var(--green); }
+.entry-ms { font-size: 11px; color: var(--muted); margin-left: 2px; }
+.entry-remove { font-size: 18px; color: var(--muted); cursor: pointer; padding: 0 4px; line-height: 1; }
+
+.entry-count { font-size: 12px; color: var(--muted); margin-top: 8px; text-align: center; }
+
+/* Manual add */
+.manual-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+.manual-row input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 15px; padding: 10px 12px;
+  font-family: inherit; outline: none;
+}
+.manual-row input:focus { border-color: var(--accent); }
+.add-btn {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+  color: var(--accent2); font-size: 22px; width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+}
+
+/* Date row */
+.date-row { display: flex; gap: 8px; margin-top: 12px; }
+.date-row input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 14px; padding: 10px 12px;
+  font-family: inherit; outline: none;
+}
+.date-row input:focus { border-color: var(--accent); }
+
+/* Buttons */
+.btn {
+  width: 100%; padding: 16px; border-radius: 12px;
+  font-size: 16px; font-weight: 600; cursor: pointer; border: none;
+  font-family: inherit; display: flex; align-items: center; justify-content: center;
+  gap: 8px; transition: opacity 0.15s; margin-top: 10px;
+}
+.btn:active { opacity: 0.75; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+/* Info box */
+.info-box {
+  background: rgba(124,108,255,0.08); border: 1px solid rgba(124,108,255,0.2);
+  border-radius: 10px; padding: 12px; font-size: 12px; color: var(--muted); line-height: 1.6;
+  margin-top: 10px;
+}
+.info-box strong { color: var(--accent2); }
+
+/* Setup steps */
+.steps { display: flex; flex-direction: column; gap: 12px; }
+.step { display: flex; gap: 12px; align-items: flex-start; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(124,108,255,0.15);
+  color: var(--accent2); font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.step-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step-text strong { color: var(--text); }
+code { background: var(--surface2); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--accent2); font-family: 'SF Mono', monospace; }
+
+.tag { display: inline-block; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.25); color: var(--green); font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
+
+.divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+/* Copied feedback */
+.copy-feedback { display: none; text-align: center; font-size: 12px; color: var(--green); margin-top: 6px; }
+
+/* Scroll hint */
+.scroll-hint { font-size: 11px; color: var(--muted); text-align: center; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="heart">❤️</span>
+  <h1>HRV Logger</h1>
+  <p class="subtitle">Screenshot your Pebble Sync HRV screen.<br>All hourly readings get logged to Apple Health.</p>
+</div>
+
+<!-- Step 1: Upload -->
+<div class="card" id="upload-card">
+  <h2>1 — Screenshot</h2>
+  <div class="drop-zone" id="drop-zone">
+    <input type="file" id="file-input" accept="image/*" capture="environment">
+    <div id="upload-placeholder">
+      <div class="drop-icon">📸</div>
+      <div class="drop-text">Tap to upload screenshot</div>
+      <div class="drop-hint">From Photos or take new photo</div>
+    </div>
+    <img id="preview-img" alt="Preview">
+  </div>
+  <span class="change-link" id="change-link" onclick="resetUpload()">Change screenshot</span>
+
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <div class="loader-text" id="loader-text">Reading HRV data…</div>
+  </div>
+  <div class="error-box" id="error-box"></div>
+</div>
+
+<!-- Step 2: Review entries -->
+<div id="result-section">
+  <div class="card">
+    <h2>2 — Review entries</h2>
+    <div class="detected-label" id="detected-label">Detected from screenshot</div>
+    <div class="entries-list" id="entries-list"></div>
+    <div class="entry-count" id="entry-count"></div>
+    <div class="scroll-hint" id="scroll-hint"></div>
+
+    <div class="divider"></div>
+
+    <!-- Manual add -->
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Add or correct an entry:</div>
+    <div class="manual-row">
+      <input type="time" id="manual-time" placeholder="Time">
+      <input type="number" id="manual-hrv" placeholder="HRV ms" min="1" max="300" style="max-width:110px">
+      <div class="add-btn" onclick="addManualEntry()">+</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Date for all entries:</div>
+    <div class="date-row">
+      <input type="date" id="entry-date">
+    </div>
+  </div>
+
+  <!-- Step 3: Write to Health -->
+  <div class="card">
+    <h2>3 — Write to Apple Health</h2>
+    <div class="info-box">
+      <strong>How it works:</strong> Each entry opens your <code>Log HRV</code> shortcut one at a time. Tap <strong>Run</strong> in Shortcuts for each one — takes about 10 seconds total.
+    </div>
+    <button class="btn btn-primary" onclick="runAllShortcuts()">📱 Start logging to Health</button>
+    <button class="btn btn-secondary" onclick="resetAll()" style="margin-top:6px">↩ Start over</button>
+  </div>
+
+  <!-- Progress card: shown during logging -->
+  <div class="card" id="log-progress-card" style="display:none">
+    <h2>Logging progress</h2>
+
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px" id="progress-title">—</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px" id="progress-entry">—</div>
+
+    <!-- Progress bar -->
+    <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:16px">
+      <div id="progress-bar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width 0.3s"></div>
+    </div>
+
+    <div class="info-box" style="margin-bottom:12px">
+      Shortcuts opened on your phone → tap <strong>Run</strong> → come back here → tap <strong>Next entry</strong>. Repeat for each one.
+    </div>
+
+    <button class="btn btn-primary" id="next-btn" onclick="nextEntry()">Next entry →</button>
+    <button class="btn btn-secondary" id="done-btn" style="display:none" onclick="resetAll()">Log another day</button>
+  </div>
+</div>
+
+<!-- Setup instructions -->
+<div class="card" id="setup-card">
+  <h2>Shortcut setup <span class="tag">once only</span></h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text"><strong>Delete your existing "Log HRV" shortcut</strong> — we need to rebuild it to support date+time</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">Open Shortcuts → <code>+</code> → <strong>Add Action</strong> → search <code>Split Text</code> → add it → set Separator to <strong>Custom</strong> → type <code>|</code> → input = <strong>Shortcut Input</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Add <code>Get Item from List</code> → <strong>First Item</strong> → rename variable to <code>HRVValue</code></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">Add <code>Get Item from List</code> again → <strong>Item at Index 2</strong> → rename to <code>Timestamp</code></div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-text">Add <code>Date</code> action → tap the date field → choose <strong>Variable</strong> → pick <code>Timestamp</code> → rename result to <code>EntryDate</code></div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-text">Add <code>Log Health Sample</code> → type = <strong>Heart Rate Variability</strong> → value = <code>HRVValue</code> → set date field to <code>EntryDate</code></div>
+    </div>
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-text">Name it exactly <code>Log HRV</code> → Done → run once and tap <strong>Allow</strong> for Apple Health</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://api.anthropic.com/v1/messages';
+let entries = []; // [{time: "HH:MM", hrv: 40}, ...]
+
+// Set today's date
+const dateInput = document.getElementById('entry-date');
+dateInput.value = new Date().toISOString().split('T')[0];
+
+// File input
+document.getElementById('file-input').addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result.split(',')[1];
+    const mediaType = file.type || 'image/jpeg';
+    document.getElementById('preview-img').src = e.target.result;
+    document.getElementById('preview-img').style.display = 'block';
+    document.getElementById('upload-placeholder').style.display = 'none';
+    document.getElementById('change-link').style.display = 'block';
+    document.getElementById('drop-zone').classList.add('has-image');
+    document.getElementById('drop-zone').querySelector('input').style.display = 'none';
+    document.getElementById('loader').style.display = 'flex';
+    document.getElementById('error-box').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    extractData(base64, mediaType);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function extractData(base64, mediaType) {
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            { type: 'text', text: `This is a screenshot from the Pebble Sync health app showing HRV (Heart Rate Variability) data.
+
+The screen shows:
+- A date at the top (e.g. "Fri, Aug 14, 2026")
+- A graph of HRV readings across the day with dots at various times
+- Summary stats: Average, Lowest, Highest
+- Possibly a "Data Details" section with individual readings
+
+Extract ALL individual HRV readings visible with their timestamps. If you can read the graph dot values and times, include each one. If only the summary stats are readable, return those labeled as average/lowest/highest.
+
+Respond ONLY with this JSON, no markdown:
+{
+  "date": "YYYY-MM-DD or null",
+  "readings": [
+    {"time": "HH:MM", "hrv": <number>, "label": "reading|average|lowest|highest"}
+  ],
+  "note": "brief description of what was extracted"
+}
+
+Rules:
+- time in 24h format (e.g. "06:00", "18:30")
+- hrv as plain integer ms value
+- If graph dots are not readable as individual numbers, just return the average with time "07:00"
+- Include as many readings as you can confidently read
+- date from the screen header if visible` }
+          ]
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content?.find(b => b.type === 'text')?.text || '';
+    let parsed;
+    try { parsed = JSON.parse(text.replace(/```json|```/g, '').trim()); }
+    catch { throw new Error('Parse error'); }
+
+    document.getElementById('loader').style.display = 'none';
+
+    if (!parsed.readings || parsed.readings.length === 0) {
+      showError("Couldn't read individual readings. Try the Data Details screen in Pebble Sync for better results.");
+      return;
+    }
+
+    // Set detected date
+    if (parsed.date) dateInput.value = parsed.date;
+
+    entries = parsed.readings.map(r => ({ time: r.time, hrv: r.hrv, label: r.label || 'reading' }));
+    document.getElementById('detected-label').textContent = parsed.note || `${entries.length} reading(s) detected`;
+    renderEntries();
+    document.getElementById('result-section').style.display = 'block';
+    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
+
+  } catch (err) {
+    document.getElementById('loader').style.display = 'none';
+    showError('Could not read screenshot. Try the Data Details screen for clearer individual readings.');
+  }
+}
+
+function renderEntries() {
+  const list = document.getElementById('entries-list');
+  list.innerHTML = '';
+  entries.forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.innerHTML = `
+      <span class="entry-time">${e.time} <span style="color:var(--muted);font-size:11px">${e.label !== 'reading' ? '· '+e.label : ''}</span></span>
+      <span><span class="entry-value">${e.hrv}</span><span class="entry-ms">ms</span></span>
+      <span class="entry-remove" onclick="removeEntry(${i})">×</span>
+    `;
+    list.appendChild(row);
+  });
+  document.getElementById('entry-count').textContent = `${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} · all will be logged to Apple Health`;
+  document.getElementById('scroll-hint').textContent = entries.length > 5 ? 'Scroll to see all' : '';
+}
+
+function removeEntry(i) {
+  entries.splice(i, 1);
+  renderEntries();
+}
+
+function addManualEntry() {
+  const time = document.getElementById('manual-time').value;
+  const hrv = parseInt(document.getElementById('manual-hrv').value);
+  if (!time || !hrv || hrv < 1 || hrv > 300) {
+    alert('Enter a valid time and HRV value (1–300 ms)');
+    return;
+  }
+  entries.push({ time, hrv, label: 'manual' });
+  entries.sort((a, b) => a.time.localeCompare(b.time));
+  document.getElementById('manual-time').value = '';
+  document.getElementById('manual-hrv').value = '';
+  renderEntries();
+}
+
+let currentEntryIndex = 0;
+
+function runAllShortcuts() {
+  if (entries.length === 0) { alert('No entries to log.'); return; }
+  if (!dateInput.value) { alert('Please set the date.'); return; }
+  currentEntryIndex = 0;
+  showProgressUI();
+  fireCurrentEntry();
+}
+
+function showProgressUI() {
+  const card = document.getElementById('log-progress-card');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth' });
+  updateProgressUI();
+}
+
+function updateProgressUI() {
+  const total = entries.length;
+  const i = currentEntryIndex;
+  const done = i >= total;
+
+  document.getElementById('progress-title').textContent = done
+    ? `All ${total} entries logged ✓`
+    : `Logging entry ${i + 1} of ${total}`;
+
+  if (!done) {
+    const e = entries[i];
+    document.getElementById('progress-entry').textContent = `${e.time} — ${e.hrv} ms`;
+    document.getElementById('progress-bar').style.width = `${(i / total) * 100}%`;
+  } else {
+    document.getElementById('progress-entry').textContent = 'Done! Check Apple Health → Heart Rate Variability';
+    document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('next-btn').style.display = 'none';
+    document.getElementById('done-btn').style.display = 'block';
+  }
+}
+
+function fireCurrentEntry() {
+  if (currentEntryIndex >= entries.length) { updateProgressUI(); return; }
+  const e = entries[currentEntryIndex];
+  const date = dateInput.value;
+  const dt = new Date(`${date}T${e.time}:00`);
+  const unix = Math.floor(dt.getTime() / 1000);
+  const input = encodeURIComponent(`${e.hrv}|${unix}`);
+  window.location.href = `shortcuts://run-shortcut?name=Log%20HRV&input=${input}`;
+}
+
+function nextEntry() {
+  currentEntryIndex++;
+  if (currentEntryIndex >= entries.length) {
+    updateProgressUI();
+  } else {
+    updateProgressUI();
+    fireCurrentEntry();
+  }
+}
+
+function showError(msg) {
+  const b = document.getElementById('error-box');
+  b.textContent = msg;
+  b.style.display = 'block';
+}
+
+function resetUpload() {
+  document.getElementById('file-input').value = '';
+  document.getElementById('preview-img').style.display = 'none';
+  document.getElementById('preview-img').src = '';
+  document.getElementById('upload-placeholder').style.display = 'block';
+  document.getElementById('change-link').style.display = 'none';
+  document.getElementById('drop-zone').classList.remove('has-image');
+  document.getElementById('drop-zone').querySelector('input').style.display = '';
+  document.getElementById('error-box').style.display = 'none';
+  document.getElementById('loader').style.display = 'none';
+}
+
+function resetAll() {
+  resetUpload();
+  entries = [];
+  currentEntryIndex = 0;
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('log-progress-card').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'block';
+  document.getElementById('done-btn').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
